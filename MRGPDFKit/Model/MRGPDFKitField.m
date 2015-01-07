@@ -159,7 +159,7 @@
             if (_fontSize == 0) {
                 font = [self fontCalculatedWithText:text inRect:rect fontName:_fontName];
             } else {
-                font = [UIFont fontWithName:_fontName size:_fontSize];
+                font = [self secureFontWithName:_fontName size:_fontSize];
             }
 
             UIGraphicsPushContext(ctx);
@@ -281,6 +281,15 @@
     self.flagsString = temp;
 }
 
+- (UIFont *)secureFontWithName:(NSString *)name size:(CGFloat)size
+{
+    UIFont *font = [UIFont fontWithName:name size:size];
+    if (font == nil) {
+        font = [UIFont systemFontOfSize:size];
+    }
+    return font;
+}
+
 - (UIFont *)fontCalculatedWithText:(NSString *)text inRect:(CGRect)rect fontName:(NSString *)fontName
 {
     CGFloat height = rect.size.height;
@@ -288,7 +297,7 @@
     UIFont *font = nil;
 
     do {
-        font = [UIFont fontWithName:fontName size:height];
+        font = [self secureFontWithName:fontName size:height];
         size = [text sizeWithFont:font thatFitsMaxSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
         height -= 1.0;
     } while (size.width >= CGRectGetWidth(rect) && height > 0);
