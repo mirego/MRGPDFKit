@@ -50,6 +50,6 @@ typedef NS_ENUM(NSUInteger, MRGPDFKitFieldType) {
 
 - (id)initWithFieldDictionary:(MRGPDFKitDictionary *)leaf page:(MRGPDFKitPage *)page parent:(MRGPDFKitForm *)parent;
 - (void)reset;
-- (void)vectorRenderInPDFContext:(CGContextRef)ctx forRect:(CGRect)rect withFontName:(NSString *)fontName;
+- (void)vectorRenderInPDFContext:(CGContextRef)ctx forRect:(CGRect)rect;
 
 @end

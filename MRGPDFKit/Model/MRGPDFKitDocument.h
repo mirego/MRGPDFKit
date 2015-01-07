@@ -19,10 +19,9 @@
 @property (nonatomic, readonly) MRGPDFKitDictionary * catalog;
 @property (nonatomic, readonly) NSArray* pages;
 @property (nonatomic, readonly) CGPDFDocumentRef document;
-@property (nonatomic, readonly) NSString *fontName;
 
 - (instancetype)init UNAVAILABLE_ATTRIBUTE;
-- (instancetype)initWithFileName:(NSString *)filename andFontName:(NSString *)fontName;
+- (instancetype)initWithFileName:(NSString *)filename;
 
 - (BOOL)openDocument;
 - (void)closeDocument;

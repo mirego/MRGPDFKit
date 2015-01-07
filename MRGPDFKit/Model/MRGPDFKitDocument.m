@@ -19,12 +19,11 @@
     NSArray *_pages;
 }
 
-- (instancetype)initWithFileName:(NSString *)filename andFontName:(NSString *)fontName
+- (instancetype)initWithFileName:(NSString *)filename
 {
     self = [super init];
     if (self) {
         _filename = filename;
-        _fontName = fontName;
     }
     return self;
 }
@@ -131,7 +130,7 @@
                 CGRect frame = form.frame;
                 CGRect correctedFrame = CGRectMake(frame.origin.x-mediaRect.origin.x, mediaRect.size.height-frame.origin.y-frame.size.height-mediaRect.origin.y, frame.size.width, frame.size.height);
                 CGContextTranslateCTM(ctx, correctedFrame.origin.x, correctedFrame.origin.y);
-                [form vectorRenderInPDFContext:ctx forRect:correctedFrame withFontName:self.fontName];
+                [form vectorRenderInPDFContext:ctx forRect:correctedFrame];
                 CGContextRestoreGState(ctx);
             }
         }

@@ -17,6 +17,10 @@
 {
     NSUInteger _flags;
     NSUInteger _annotFlags;
+    NSString *_fontName;
+    CGFloat _fontSize;
+    NSInteger _fontColor;
+    NSUInteger _maxLen;
 }
 
 - (id)initWithFieldDictionary:(MRGPDFKitDictionary *)leaf page:(MRGPDFKitPage *)page parent:(MRGPDFKitForm *)parent
@@ -33,6 +37,9 @@
         NSNumber *fieldTextAlignment = [self getAttributeFromLeaf:leaf Name:@"Q" Inheritable:YES];
         self.exportValue = [self getExportValueFrom:leaf];
         self.setAppearanceStream = [self getSetAppearanceStreamFromLeaf:leaf];
+        NSString *fontInfo = [self getAttributeFromLeaf:leaf Name:@"DA" Inheritable:YES];
+        [self extractDefaultAppearance:fontInfo];
+        _maxLen = [[self getAttributeFromLeaf:leaf Name:@"MaxLen" Inheritable:YES] unsignedIntegerValue];
 
         NSArray *arr = [[self getAttributeFromLeaf:leaf Name:@"Opt" Inheritable:YES] nsa];
 
@@ -143,21 +150,37 @@
 #pragma mark - Public
 //------------------------------------------------------------------------------
 
-- (void)vectorRenderInPDFContext:(CGContextRef)ctx forRect:(CGRect)rect withFontName:(NSString *)fontName
+- (void)vectorRenderInPDFContext:(CGContextRef)ctx forRect:(CGRect)rect
 {
     @synchronized ([NSString class]) {
         if (self.fieldType == MRGPDFKitFieldTypeText || self.fieldType == MRGPDFKitFieldTypeChoice) {
             NSString *text = self.value;
-            UIFont *font = [self fontCalculatedWithText:text inRect:rect fontName:fontName];
+            UIFont *font = nil;
+            if (_fontSize == 0) {
+                font = [self fontCalculatedWithText:text inRect:rect fontName:_fontName];
+            } else {
+                font = [UIFont fontWithName:_fontName size:_fontSize];
+            }
 
             UIGraphicsPushContext(ctx);
             NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
             paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
-            paragraphStyle.alignment = self.textAlignment;
 
-            CGRect textRect = CGRectMake(0, 0, CGRectGetWidth(rect), CGRectGetHeight(rect) * 2.0);
-            textRect.origin.y = rect.size.height - font.pointSize;
-            [text drawInRect:textRect withAttributes:@{NSFontAttributeName: font, NSParagraphStyleAttributeName: paragraphStyle}];
+            if (_maxLen > 0 && text.length <= _maxLen) {
+                CGFloat subRectWidth = CGRectGetWidth(rect) / _maxLen;
+                paragraphStyle.alignment = NSTextAlignmentCenter;
+                for (NSUInteger i = 0; i < text.length; i++) {
+                    NSString *character = [text substringWithRange:NSMakeRange(i, 1)];
+                    const CGRect subRect = CGRectMake(subRectWidth * i, 0, subRectWidth, CGRectGetHeight(rect));
+                    [character drawInRect:subRect withAttributes:@{NSFontAttributeName: font, NSParagraphStyleAttributeName: paragraphStyle}];
+                }
+            } else {
+                CGRect textRect = CGRectMake(0, 0, CGRectGetWidth(rect), CGRectGetHeight(rect));
+                paragraphStyle.alignment = self.textAlignment;
+                textRect.origin.y = rect.size.height - font.pointSize;
+                [text drawInRect:textRect withAttributes:@{NSFontAttributeName: font, NSParagraphStyleAttributeName: paragraphStyle}];
+            }
+
             UIGraphicsPopContext();
         } else if (self.fieldType == MRGPDFKitFieldTypeButton) {
             CGFloat minDim = MIN(rect.size.width, rect.size.height) * 0.85;
@@ -268,7 +291,7 @@
         font = [UIFont fontWithName:fontName size:height];
         size = [text sizeWithFont:font thatFitsMaxSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
         height -= 1.0;
-    } while (size.width >= CGRectGetWidth(rect));
+    } while (size.width >= CGRectGetWidth(rect) && height > 0);
     return font;
 }
 
@@ -380,6 +403,26 @@
         return as;
     }
     return nil;
+}
+
+- (void)extractDefaultAppearance:(NSString *)defaultAppearance
+{
+    NSArray *components = [[[defaultAppearance componentsSeparatedByString:@" "] reverseObjectEnumerator] allObjects];
+
+    if (components.count == 5) {
+        _fontName = [components lastObject];
+
+        for (NSUInteger i = 0; i < components.count; i++) {
+            const NSString *value = components[i];
+            if ([value isEqualToString:@"Tf"]) {
+                _fontSize = [components[++i] floatValue];
+            } else if ([value isEqualToString:@"g"]) {
+                _fontColor = [components[++i] integerValue];
+            } else if ([[value substringToIndex:1] isEqualToString:@"/"]) {
+                _fontName = [value substringFromIndex:1];
+            }
+        }
+    }
 }
 
 @end
