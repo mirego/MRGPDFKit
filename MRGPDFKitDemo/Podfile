@@ -1,0 +1,11 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+target 'MRGPDFKit', :exclusive => true do
+  pod "MRGPDFKit", :path => "../"
+end
+
+target 'Tests', :exclusive => true do
+  pod "MRGPDFKit", :path => "../"
+
+  
+end

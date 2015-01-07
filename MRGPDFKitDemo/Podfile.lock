@@ -1,0 +1,17 @@
+PODS:
+  - MCUIViewLayout (0.3.4)
+  - MRGPDFKit (0.1.0):
+    - MCUIViewLayout (= 0.3.4)
+
+DEPENDENCIES:
+  - MRGPDFKit (from `../`)
+
+EXTERNAL SOURCES:
+  MRGPDFKit:
+    :path: ../
+
+SPEC CHECKSUMS:
+  MCUIViewLayout: 12e61beed40000124decee25d72c308651dc562f
+  MRGPDFKit: 511cfc4fe8b417b79edffc289191893f7089e32a
+
+COCOAPODS: 0.35.0
