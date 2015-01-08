@@ -196,4 +196,19 @@
     return [self setFieldValue:value forKey:key];
 }
 
+- (CGFloat)pdfScaleAtPage:(NSUInteger)page pageWidth:(CGFloat)width
+{
+    NSUInteger i = 0;
+    CGFloat pdfScale = 0.0;
+    while(i < self.pages.count && pdfScale == 0.0) {
+        MRGPDFKitPage *pdfPage = self.pages[i];
+        if (pdfPage.pageNumber == page) {
+            CGRect pageRect = [pdfPage mediaBox];
+            pdfScale = width / CGRectGetWidth(pageRect);
+        }
+        i++;
+    }
+    return pdfScale;
+}
+
 @end

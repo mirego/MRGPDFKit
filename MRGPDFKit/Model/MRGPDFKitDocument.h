@@ -34,4 +34,6 @@
 - (BOOL)setFieldValue:(NSString *)value forKey:(NSString *)key;
 - (BOOL)setFieldChecked:(BOOL)checked forKey:(NSString *)key;
 
+- (CGFloat)pdfScaleAtPage:(NSUInteger)page pageWidth:(CGFloat)width;
+
 @end
