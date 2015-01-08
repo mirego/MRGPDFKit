@@ -148,7 +148,8 @@
 
     CGPDFPageRef pageref = CGPDFDocumentGetPage(doc, page);
     CGRect pageRect = CGPDFPageGetBoxRect(pageref, kCGPDFMediaBox);
-    CGFloat pdfScale = width/pageRect.size.width;
+    const CGFloat deviceScale = [UIScreen mainScreen].scale;
+    CGFloat pdfScale = width/pageRect.size.width * deviceScale;
     pageRect.size = CGSizeMake(pageRect.size.width * pdfScale, pageRect.size.height * pdfScale);
     pageRect.origin = CGPointZero;
 
