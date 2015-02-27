@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name             = "MRGPDFKit"
   s.version          = "0.1.0"
   s.summary          = "A simple objective-C Toolkit to fill PDF forms."
-  s.description      = Add this objective-C Toolkit to add PDF form filling capability in your project.
+  s.description      = "Add this objective-C Toolkit to add PDF form filling capability in your project."
   s.homepage         = "https://github.com/mirego/MRGPDFKit"
   # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'BSD 3-Clause'
