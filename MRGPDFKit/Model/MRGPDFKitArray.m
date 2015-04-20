@@ -76,7 +76,7 @@
     y0 = [[self.nsa objectAtIndex:1] floatValue];
     x1 = [[self.nsa objectAtIndex:2] floatValue];
     y1 = [[self.nsa objectAtIndex:3] floatValue];
-    return CGRectMake(MIN(x0,x1),MIN(y0,y1),fabsf(x1-x0),fabsf(y1-y0));
+    return CGRectMake(MIN(x0,x1),MIN(y0,y1),fabsf((float)(x1-x0)),fabsf((float)(y1-y0)));
 }
 
 - (id)objectAtIndex:(NSUInteger)index

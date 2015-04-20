@@ -22,11 +22,16 @@
 
 - (instancetype)init UNAVAILABLE_ATTRIBUTE;
 - (instancetype)initWithFileName:(NSString *)filename;
+- (instancetype)initWithFileURL:(NSURL *)url;
+- (instancetype)initWithFileURL:(NSURL *)url tempFileURL:(NSURL *)tempURL;
 
 - (BOOL)openDocument;
 - (void)closeDocument;
-- (UIImage *)imageFromPage:(NSUInteger)page width:(NSUInteger)width;
+- (UIImage *)imageFromPage:(NSUInteger)page width:(CGFloat)width;
 - (NSData *)flattenedData;
+- (NSData *)flattenedDataWithURL:(NSURL *)url;
+- (NSData *)flattenedDataWithAnnotations:(NSArray *)annotations;
+- (NSData *)flattenedDataWithURL:(NSURL *)url annotations:(NSArray *)annotations;
 - (NSUInteger)getPageCount;
 
 - (NSArray *)fieldsWithType:(MRGPDFKitFieldType)type;
