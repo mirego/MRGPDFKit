@@ -11,6 +11,12 @@
 @class MRGPDFKitDictionary;
 @class MRGPDFKitForm;
 
+typedef NS_ENUM(NSUInteger, MRGPDFKitDocumentRenderType) {
+    MRGPDFKitDocumentRenderTypePrint = 0,
+    MRGPDFKitDocumentRenderTypeView,
+    MRGPDFKitDocumentRenderTypeFile
+};
+
 @interface MRGPDFKitDocument : NSObject
 
 @property (nonatomic) NSString *filename;
@@ -25,8 +31,8 @@
 
 - (BOOL)openDocument;
 - (void)closeDocument;
-- (UIImage *)imageFromPage:(NSUInteger)page width:(NSUInteger)width;
-- (NSData *)flattenedData;
+- (UIImage *)imageFromPage:(NSUInteger)page width:(NSUInteger)width renderType:(MRGPDFKitDocumentRenderType)renderType;
+- (NSData *)flattenedDataForRenderType:(MRGPDFKitDocumentRenderType)renderType;
 - (NSUInteger)getPageCount;
 
 - (NSArray *)fieldsWithType:(MRGPDFKitFieldType)type;
