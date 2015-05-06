@@ -47,9 +47,27 @@ typedef NS_ENUM(NSUInteger, MRGPDFKitFieldType) {
 @property (nonatomic) NSString *setAppearanceStream;
 @property (nonatomic) MRGPDFKitDictionary *dictionary;
 @property (nonatomic) MRGPDFKitWidget *widget;
+@property (nonatomic) BOOL hidden;
 
 - (id)initWithFieldDictionary:(MRGPDFKitDictionary *)leaf page:(MRGPDFKitPage *)page parent:(MRGPDFKitForm *)parent;
 - (void)reset;
 - (void)vectorRenderInPDFContext:(CGContextRef)ctx forRect:(CGRect)rect;
 
+- (BOOL)isFieldReadOnly;
+- (BOOL)isFieldRequired;
+- (BOOL)isFieldNoExport;
+- (BOOL)isFieldNoToggleToOff;
+- (BOOL)isFieldRadio;
+- (BOOL)isFieldPushbutton;
+- (BOOL)isFieldCombo;
+- (BOOL)isFieldEdit;
+- (BOOL)isFieldSort;
+- (BOOL)isFieldMultiline;
+- (BOOL)isFieldPassword;
+- (BOOL)isFieldInvisible;
+- (BOOL)isFieldHidden;
+- (BOOL)isFieldPrintable;
+- (BOOL)isFieldNoZoom;
+- (BOOL)isFieldNoRotate;
+- (BOOL)isFieldNoView;
 @end

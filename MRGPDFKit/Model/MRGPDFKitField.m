@@ -211,6 +211,91 @@
     self.value = self.defaultValue;
 }
 
+- (BOOL)isFieldReadOnly
+{
+    return [self.flagsString rangeOfString:@"-ReadOnly"].location != NSNotFound;
+}
+
+- (BOOL)isFieldRequired
+{
+    return [self.flagsString rangeOfString:@"-Required"].location != NSNotFound;
+}
+
+- (BOOL)isFieldNoExport
+{
+    return [self.flagsString rangeOfString:@"-NoExport"].location != NSNotFound;
+}
+
+- (BOOL)isFieldNoToggleToOff
+{
+    return [self.flagsString rangeOfString:@"-NoToggleToOff"].location != NSNotFound;
+}
+
+- (BOOL)isFieldRadio
+{
+    return [self.flagsString rangeOfString:@"-Radio"].location != NSNotFound;
+}
+
+- (BOOL)isFieldPushbutton
+{
+    return [self.flagsString rangeOfString:@"-Pushbutton"].location != NSNotFound;
+}
+
+- (BOOL)isFieldCombo
+{
+    return [self.flagsString rangeOfString:@"-Combo"].location != NSNotFound;
+}
+
+- (BOOL)isFieldEdit
+{
+    return [self.flagsString rangeOfString:@"-Edit"].location != NSNotFound;
+}
+
+- (BOOL)isFieldSort
+{
+    return [self.flagsString rangeOfString:@"-Sort"].location != NSNotFound;
+}
+
+- (BOOL)isFieldMultiline
+{
+    return [self.flagsString rangeOfString:@"-Multiline"].location != NSNotFound;
+}
+
+- (BOOL)isFieldPassword
+{
+    return [self.flagsString rangeOfString:@"-Password"].location != NSNotFound;
+}
+
+- (BOOL)isFieldInvisible
+{
+    return [self.flagsString rangeOfString:@"-Invisible"].location != NSNotFound;
+}
+
+- (BOOL)isFieldHidden
+{
+    return [self.flagsString rangeOfString:@"-Hidden"].location != NSNotFound;
+}
+
+- (BOOL)isFieldPrintable
+{
+    return [self.flagsString rangeOfString:@"-Print"].location != NSNotFound;
+}
+
+- (BOOL)isFieldNoZoom
+{
+    return [self.flagsString rangeOfString:@"-NoZoom"].location != NSNotFound;
+}
+
+- (BOOL)isFieldNoRotate
+{
+    return [self.flagsString rangeOfString:@"-NoRotate"].location != NSNotFound;
+}
+
+- (BOOL)isFieldNoView
+{
+    return [self.flagsString rangeOfString:@"-NoView"].location != NSNotFound;
+}
+
 //------------------------------------------------------------------------------
 #pragma mark - Private
 //------------------------------------------------------------------------------

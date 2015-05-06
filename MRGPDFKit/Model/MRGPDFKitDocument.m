@@ -103,7 +103,7 @@
     }
 }
 
-- (NSData *)flattenedData
+- (NSData *)flattenedDataForRenderType:(MRGPDFKitDocumentRenderType)renderType
 {
     NSUInteger numberOfPages = [self getPageCount];
     NSMutableData *pageData = [NSMutableData data];
@@ -125,7 +125,9 @@
         CGContextRestoreGState(ctx);
 
         for(MRGPDFKitField *form in self.form) {
-            if(form.page == page) {
+
+            BOOL renderForm = (!form.isFieldNoView && renderType == MRGPDFKitDocumentRenderTypeView) || (!form.isFieldPrintable && renderType == MRGPDFKitDocumentRenderTypePrint) || renderType == MRGPDFKitDocumentRenderTypeFile;
+            if(form.page == page && renderForm) {
                 CGContextSaveGState(ctx);
                 CGRect frame = form.frame;
                 CGRect correctedFrame = CGRectMake(frame.origin.x-mediaRect.origin.x, mediaRect.size.height-frame.origin.y-frame.size.height-mediaRect.origin.y, frame.size.width, frame.size.height);
@@ -140,9 +142,9 @@
     return pageData;
 }
 
-- (UIImage *)imageFromPage:(NSUInteger)page width:(NSUInteger)width
+- (UIImage *)imageFromPage:(NSUInteger)page width:(NSUInteger)width renderType:(MRGPDFKitDocumentRenderType)renderType
 {
-    CGDataProviderRef dataProvider = CGDataProviderCreateWithCFData((__bridge CFDataRef)[self flattenedData]);
+    CGDataProviderRef dataProvider = CGDataProviderCreateWithCFData((__bridge CFDataRef)[self flattenedDataForRenderType:renderType]);
     CGPDFDocumentRef doc = CGPDFDocumentCreateWithProvider(dataProvider);
     CGDataProviderRelease(dataProvider);
 
