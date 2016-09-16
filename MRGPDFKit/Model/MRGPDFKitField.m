@@ -13,6 +13,8 @@
 #import "MRGPDFKitFieldSignature.h"
 #import "NSString+MRGPDFKit.h"
 
+#define MRGPDFKitButtonMarginScaleFactor 0.75
+
 @implementation MRGPDFKitField
 {
     NSUInteger _flags;
@@ -185,12 +187,19 @@
         } else if (self.fieldType == MRGPDFKitFieldTypeButton) {
             CGFloat minDim = MIN(rect.size.width, rect.size.height) * 0.85;
             CGPoint center = CGPointMake(rect.size.width / 2, rect.size.height / 2);
+            CGFloat margin = minDim/3;
             rect = CGRectMake(center.x - minDim / 2, center.y - minDim / 2, minDim, minDim);
 
             if ([self.value isEqualToString:self.exportValue]) {
                 CGContextSaveGState(ctx);
-                CGContextSetFillColorWithColor(ctx, [UIColor blackColor].CGColor);
-                CGContextFillRect(ctx, CGRectMake(rect.origin.x, rect.origin.y, rect.size.width, rect.size.height));
+                CGContextTranslateCTM(ctx, rect.origin.x, rect.origin.y);
+                CGContextSetLineWidth(ctx, rect.size.width/5);
+                CGContextSetLineCap(ctx,kCGLineCapRound);
+                CGContextSetStrokeColorWithColor(ctx, [UIColor blackColor].CGColor);
+                CGContextMoveToPoint(ctx, margin*MRGPDFKitButtonMarginScaleFactor, rect.size.height/2);
+                CGContextAddLineToPoint(ctx, rect.size.width/2-margin/4, rect.size.height-margin*MRGPDFKitButtonMarginScaleFactor);
+                CGContextAddLineToPoint(ctx, rect.size.width-margin*MRGPDFKitButtonMarginScaleFactor, margin/2);
+                CGContextStrokePath(ctx);
                 CGContextRestoreGState(ctx);
             }
         } else if (self.fieldType == MRGPDFKitFieldTypeSignature) {
