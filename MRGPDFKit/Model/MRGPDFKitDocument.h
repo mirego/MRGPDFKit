@@ -31,10 +31,10 @@ typedef NS_ENUM(NSUInteger, MRGPDFKitDocumentRenderType) {
 
 - (BOOL)openDocument;
 - (void)closeDocument;
-- (UIImage *)imageFromPage:(NSUInteger)page width:(NSUInteger)width;
+- (UIImage *)imageFromPage:(NSUInteger)page width:(NSUInteger)width renderType:(MRGPDFKitDocumentRenderType)renderType;
 - (NSData *)flattenedDataForRenderType:(MRGPDFKitDocumentRenderType)renderType;
-- (NSData *)flattenedDataWithAnnotations:(NSArray *)annotations;
-- (NSData *)flattenedDataWithURL:(NSURL *)url annotations:(NSArray *)annotations;
+- (NSData *)flattenedDataWithAnnotations:(NSArray *)annotations renderType:(MRGPDFKitDocumentRenderType)renderType;
+    - (NSData *)flattenedDataWithURL:(NSURL *)url annotations:(NSArray *)annotations renderType:(MRGPDFKitDocumentRenderType)renderType;
 - (NSUInteger)getPageCount;
 
 - (NSArray *)fieldsWithType:(MRGPDFKitFieldType)type;

@@ -121,7 +121,7 @@
         CGContextSaveGState(ctx);
         CGContextScaleCTM(ctx,1,-1);
         CGContextTranslateCTM(ctx, 0, -mediaRect.size.height);
-        CGContextDrawPDFPage(ctx, CGPDFDocumentGetPage(_document, page));
+        CGContextDrawPDFPage(ctx, CGPDFDocumentGetPage(_document,page));
         CGContextRestoreGState(ctx);
 
         for(MRGPDFKitField *form in self.form) {
@@ -142,11 +142,11 @@
     return pageData;
 }
 
-- (NSData *)flattenedDataWithAnnotations:(NSArray *)annotations {
-    return [self flattenedDataWithURL:nil annotations:annotations];
+- (NSData *)flattenedDataWithAnnotations:(NSArray *)annotations flattenedDataForRenderType:(MRGPDFKitDocumentRenderType)renderType {
+    return [self flattenedDataWithURL:nil annotations:annotations renderType:renderType];
 }
 
-- (NSData *)flattenedDataWithURL:(NSURL *)url annotations:(NSArray *)annotations {
+- (NSData *)flattenedDataWithURL:(NSURL *)url annotations:(NSArray *)annotations renderType:(MRGPDFKitDocumentRenderType)renderType {
     NSUInteger numberOfPages = [self getPageCount];
     NSMutableData *pageData = [NSMutableData data];
     if (url) {
@@ -173,7 +173,9 @@
 
             @autoreleasepool {
                 for(MRGPDFKitField *form in self.form) {
-                    if(form.page == page) {
+                    BOOL renderForm = (!form.isFieldNoView && renderType == MRGPDFKitDocumentRenderTypeView) || (!form.isFieldPrintable && renderType == MRGPDFKitDocumentRenderTypePrint) || renderType == MRGPDFKitDocumentRenderTypeFile;
+    
+                    if(form.page == page && renderForm) {
                         CGContextSaveGState(ctx);
                         CGRect frame = form.frame;
                         CGRect correctedFrame = CGRectMake(frame.origin.x-mediaRect.origin.x, mediaRect.size.height-frame.origin.y-frame.size.height-mediaRect.origin.y, frame.size.width, frame.size.height);
@@ -227,7 +229,7 @@
     }
 }
 
-- (UIImage *)imageFromPage:(NSUInteger)page width:(NSUInteger)width
+- (UIImage *)imageFromPage:(NSUInteger)page width:(NSUInteger)width renderType:(MRGPDFKitDocumentRenderType)renderType
 {
     CGPDFPageRef pageref = CGPDFDocumentGetPage(_document, page);
     CGRect pageRect = CGPDFPageGetBoxRect(pageref, kCGPDFMediaBox);
