@@ -35,7 +35,7 @@
 
 - (void)displayPage:(NSInteger)page
 {
-    self.pdfView.image = [self.nativeDocument imageFromPage:page width:self.bounds.size.width renderType:MRGPDFKitDocumentRenderTypeView];
+    self.pdfView.image = [self.nativeDocument imageFromPage:page width:self.bounds.size.width];
 }
 
 @end
