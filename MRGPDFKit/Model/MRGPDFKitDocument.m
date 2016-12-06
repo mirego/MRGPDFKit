@@ -142,13 +142,96 @@
     return pageData;
 }
 
+- (NSData *)flattenedDataWithAnnotations:(NSArray *)annotations flattenedDataForRenderType:(MRGPDFKitDocumentRenderType)renderType {
+    return [self flattenedDataWithURL:nil annotations:annotations renderType:renderType];
+}
+
+- (NSData *)flattenedDataWithURL:(NSURL *)url annotations:(NSArray *)annotations renderType:(MRGPDFKitDocumentRenderType)renderType {
+    NSUInteger numberOfPages = [self getPageCount];
+    NSMutableData *pageData = [NSMutableData data];
+    if (url) {
+        UIGraphicsBeginPDFContextToFile(url.path, CGRectZero, nil);
+    } else {
+        UIGraphicsBeginPDFContextToData(pageData, CGRectZero , nil);
+    }
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+
+    @autoreleasepool {
+        for(NSUInteger page = 1; page <= numberOfPages;page++) {
+            CGRect mediaRect = CGPDFPageGetBoxRect(CGPDFDocumentGetPage(_document,page), kCGPDFMediaBox);
+            CGRect cropRect = CGPDFPageGetBoxRect(CGPDFDocumentGetPage(_document,page), kCGPDFCropBox);
+            CGRect artRect = CGPDFPageGetBoxRect(CGPDFDocumentGetPage(_document,page), kCGPDFArtBox);
+            CGRect bleedRect = CGPDFPageGetBoxRect(CGPDFDocumentGetPage(_document,page), kCGPDFBleedBox);
+
+            UIGraphicsBeginPDFPageWithInfo(mediaRect, @{(NSString*)kCGPDFContextCropBox:[NSValue valueWithCGRect:cropRect],(NSString*)kCGPDFContextArtBox:[NSValue valueWithCGRect:artRect],(NSString*)kCGPDFContextBleedBox:[NSValue valueWithCGRect:bleedRect]});
+
+            CGContextSaveGState(ctx);
+            CGContextScaleCTM(ctx,1,-1);
+            CGContextTranslateCTM(ctx, 0, -mediaRect.size.height);
+            CGContextDrawPDFPage(ctx, CGPDFDocumentGetPage(_document,page));
+            CGContextRestoreGState(ctx);
+
+            @autoreleasepool {
+                for(MRGPDFKitField *form in self.form) {
+                    BOOL renderForm = (!form.isFieldNoView && renderType == MRGPDFKitDocumentRenderTypeView) || (!form.isFieldPrintable && renderType == MRGPDFKitDocumentRenderTypePrint) || renderType == MRGPDFKitDocumentRenderTypeFile;
+    
+                    if(form.page == page && renderForm) {
+                        CGContextSaveGState(ctx);
+                        CGRect frame = form.frame;
+                        CGRect correctedFrame = CGRectMake(frame.origin.x-mediaRect.origin.x, mediaRect.size.height-frame.origin.y-frame.size.height-mediaRect.origin.y, frame.size.width, frame.size.height);
+                        CGContextTranslateCTM(ctx, correctedFrame.origin.x, correctedFrame.origin.y);
+                        [form vectorRenderInPDFContext:ctx forRect:correctedFrame];
+                        CGContextRestoreGState(ctx);
+                    }
+                }
+            }
+
+            NSInteger annotationIndex = page - 1;
+            if (annotationIndex < annotations.count) {
+                NSArray *parsedAnnotations = nil;
+                if ([[annotations objectAtIndex:annotationIndex] isKindOfClass:[UIImage class]]) {
+                    parsedAnnotations = [NSArray arrayWithObject:[annotations objectAtIndex:annotationIndex]];
+                } else if([[annotations objectAtIndex:annotationIndex] isKindOfClass:[NSArray class]]) {
+                    parsedAnnotations = [annotations objectAtIndex:annotationIndex];
+                }
+
+                @autoreleasepool {
+                    for (id annotation in parsedAnnotations) {
+                        if ([annotation isKindOfClass:[UIImage class]]) {
+                            UIImage *castedAnnotation = (UIImage *)annotation;
+                            CGContextSaveGState(ctx);
+                            CGRect frame = CGRectZero;
+                            // Note : annotations are full page layers
+                            frame.size.width = mediaRect.size.width;
+                            frame.size.height = mediaRect.size.height;
+
+                            CGRect correctedFrame = CGRectMake(frame.origin.x-mediaRect.origin.x, mediaRect.size.height-frame.origin.y-frame.size.height-mediaRect.origin.y, frame.size.width, frame.size.height);
+                            CGContextTranslateCTM(ctx, correctedFrame.origin.x, correctedFrame.origin.y);
+
+                            UIGraphicsPushContext(ctx);
+                            [castedAnnotation drawInRect:CGRectMake(0, 0, CGRectGetWidth(correctedFrame), CGRectGetHeight(correctedFrame))];
+                            UIGraphicsPopContext();
+                            
+                            CGContextRestoreGState(ctx);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    UIGraphicsEndPDFContext();
+    
+    if (url) {
+        return [NSData dataWithContentsOfURL:url options:NSDataReadingMappedIfSafe error:nil];
+    } else {
+        return pageData;
+    }
+}
+
 - (UIImage *)imageFromPage:(NSUInteger)page width:(NSUInteger)width renderType:(MRGPDFKitDocumentRenderType)renderType
 {
-    CGDataProviderRef dataProvider = CGDataProviderCreateWithCFData((__bridge CFDataRef)[self flattenedDataForRenderType:renderType]);
-    CGPDFDocumentRef doc = CGPDFDocumentCreateWithProvider(dataProvider);
-    CGDataProviderRelease(dataProvider);
-
-    CGPDFPageRef pageref = CGPDFDocumentGetPage(doc, page);
+    CGPDFPageRef pageref = CGPDFDocumentGetPage(_document, page);
     CGRect pageRect = CGPDFPageGetBoxRect(pageref, kCGPDFMediaBox);
     const CGFloat deviceScale = [UIScreen mainScreen].scale;
     CGFloat pdfScale = width/pageRect.size.width * deviceScale;
@@ -168,7 +251,6 @@
     UIImage *thm = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
 
-    CGPDFDocumentRelease(doc);
     return thm;
 }
 
