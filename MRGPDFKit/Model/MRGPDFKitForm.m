@@ -99,10 +99,15 @@
 {
     NSUInteger targ = (NSUInteger)(((MRGPDFKitDictionary *)[leaf objectForKey:@"P"]).dictionary);
     leaf.parent = parent;
-
-    NSUInteger index = targ ? ([[pmap objectForKey:[NSNumber numberWithUnsignedInteger:targ]] unsignedIntegerValue] - 1) : 0;
-    MRGPDFKitField *form = [[MRGPDFKitField alloc] initWithFieldDictionary:leaf page:[_document.pages objectAtIndex:index] parent:self];
-    [self addField:form];
+    
+    if (targ == nil) return;
+    
+    id pdfPageIndexValue = [pmap objectForKey:[NSNumber numberWithUnsignedInteger:targ]];
+    if (pdfPageIndexValue) {
+        NSUInteger pdfPageIndex = [pdfPageIndexValue unsignedIntegerValue] - 1;
+        MRGPDFKitField *form = [[MRGPDFKitField alloc] initWithFieldDictionary:leaf page:[_document.pages objectAtIndex:pdfPageIndex] parent:self];
+        [self addField:form];
+    }
 }
 
 - (NSArray *)formsDescendingFromTreeNode:(NSDictionary *)node
