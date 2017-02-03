@@ -28,6 +28,18 @@
     return self;
 }
 
+- (instancetype)initWithDocumentData:(NSData *)documentData {
+    self = [super init];
+    if (self) {
+        _documentData = documentData;
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [self closeDocument];
+}
+
 // -----------------------------------------------------------------------------
 #pragma mark - Getter
 // -----------------------------------------------------------------------------
@@ -91,8 +103,14 @@
 - (BOOL)openDocument
 {
     [self closeDocument];
-    _document = [MRGPDFKitUtility newPDFDocumentRefFromPath:self.filename];
-    return YES;
+    
+    if (_documentData != nil) {
+        _document = [MRGPDFKitUtility newPDFDocumentRefFromData:_documentData];
+    } else if (_filename != nil) {
+        _document = [MRGPDFKitUtility newPDFDocumentRefFromPath:self.filename];
+    }
+    
+    return _document != nil;
 }
 
 - (void)closeDocument
@@ -142,7 +160,7 @@
     return pageData;
 }
 
-- (NSData *)flattenedDataWithAnnotations:(NSArray *)annotations flattenedDataForRenderType:(MRGPDFKitDocumentRenderType)renderType {
+- (NSData *)flattenedDataWithAnnotations:(NSArray *)annotations renderType:(MRGPDFKitDocumentRenderType)renderType {
     return [self flattenedDataWithURL:nil annotations:annotations renderType:renderType];
 }
 
