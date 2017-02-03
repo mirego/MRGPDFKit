@@ -160,7 +160,7 @@
     return pageData;
 }
 
-- (NSData *)flattenedDataWithAnnotations:(NSArray *)annotations flattenedDataForRenderType:(MRGPDFKitDocumentRenderType)renderType {
+- (NSData *)flattenedDataWithAnnotations:(NSArray *)annotations renderType:(MRGPDFKitDocumentRenderType)renderType {
     return [self flattenedDataWithURL:nil annotations:annotations renderType:renderType];
 }
 
