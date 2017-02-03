@@ -28,6 +28,7 @@ typedef NS_ENUM(NSUInteger, MRGPDFKitDocumentRenderType) {
 
 - (instancetype)init UNAVAILABLE_ATTRIBUTE;
 - (instancetype)initWithFileName:(NSString *)filename;
+- (instancetype)initWithDocumentData:(NSData *)documentData;
 
 - (BOOL)openDocument;
 - (void)closeDocument;
