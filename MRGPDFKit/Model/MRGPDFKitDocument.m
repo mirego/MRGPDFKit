@@ -31,7 +31,7 @@
 - (instancetype)initWithDocumentData:(NSData *)documentData {
     self = [super init];
     if (self) {
-        _documentData = documentData;
+        _documentData = [[NSMutableData alloc] initWithData:documentData];
     }
     return self;
 }

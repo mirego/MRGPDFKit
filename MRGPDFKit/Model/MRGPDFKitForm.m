@@ -100,7 +100,7 @@
     NSUInteger targ = (NSUInteger)(((MRGPDFKitDictionary *)[leaf objectForKey:@"P"]).dictionary);
     leaf.parent = parent;
     
-    if (targ == nil) return;
+    if (targ == 0) return;
     
     id pdfPageIndexValue = [pmap objectForKey:[NSNumber numberWithUnsignedInteger:targ]];
     if (pdfPageIndexValue) {
