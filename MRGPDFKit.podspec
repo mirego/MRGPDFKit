@@ -14,5 +14,5 @@ Pod::Spec.new do |s|
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  s.dependency 'MCUIViewLayout', '0.3.4'
+  s.dependency 'MCUIViewLayout', '~> 0.5.1'
 end
